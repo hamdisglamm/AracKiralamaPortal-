@@ -1,0 +1,100 @@
+﻿@model IEnumerable<AracKiralamaPortal.Models.Car>
+
+@{
+    ViewData["Title"] = "Araç Listesi";
+}
+
+<div class="container my-4">
+    <h1 class="text-center">Araç Listesi</h1>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="form-inline my-3">
+        <input type="text" id="searchBrand" class="form-control mr-2" placeholder="Marka ara..." />
+        <button id="filterButton" class="btn btn-primary">Ara</button>
+    </div>
+
+    <div id="carList">
+        <table class="table table-striped table-bordered table-responsive-md">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Marka</th>
+                    <th>Model</th>
+                    <th>Günlük Fiyat</th>
+                    <th>Durum</th>
+                    <th>Detaylar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var car in Model)
+                {
+                    <tr>
+                        <td>@car.Brand</td>
+                        <td>@car.Model</td>
+                        <td>@car.PricePerDay ₺</td>
+                        <td>@(car.IsAvailable ? "Uygun" : "Kiralanmış")</td>
+                        <td>
+                            <a asp-controller="User" asp-action="Details" asp-route-id="@car.Id" class="btn btn-info btn-sm">Detaylar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.16/signalr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // AJAX ile filtreleme
+            $("#filterButton").click(function () {
+                var searchBrand = $("#searchBrand").val();
+
+                $.ajax({
+                    url: '/User/FilterCars',
+                    type: 'GET',
+                    data: { searchBrand: searchBrand },
+                    success: function (data) {
+                        var carList = $("#carList tbody");
+                        carList.empty();
+
+                        data.forEach(function (car) {
+                            carList.append(`
+                                <tr>
+                                    <td>${car.brand}</td>
+                                    <td>${car.model}</td>
+                                    <td>${car.pricePerDay} ₺</td>
+                                    <td>${car.isAvailable ? "Uygun" : "Kiralanmış"}</td>
+                                    <td>
+                                        <a href="/User/Details/${car.id}" class="btn btn-info btn-sm">Detaylar</a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function () {
+                        alert("Filtreleme sırasında bir hata oluştu!");
+                    }
+                });
+            });
+
+            // SignalR entegrasyonu
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/carHub")
+                .build();
+
+            connection.on("CarUpdated", function () {
+                $("#filterButton").click(); // Filtreyi yeniden çalıştır
+            });
+
+            connection.start();
+        });
+    </script>
+}

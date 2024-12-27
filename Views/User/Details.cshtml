@@ -1,0 +1,50 @@
+﻿@model AracKiralamaPortal.Models.Car
+
+@{
+    ViewData["Title"] = "Araç Detayları";
+}
+
+<div class="container my-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="card-title">@Model.Brand @Model.Model</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-text"><strong>Marka:</strong> @Model.Brand</p>
+            <p class="card-text"><strong>Model:</strong> @Model.Model</p>
+            <p class="card-text"><strong>Günlük Fiyat:</strong> @Model.PricePerDay ₺</p>
+
+            @if (Model.IsAvailable)
+            {
+                <h4 class="mt-4">Rezervasyon Yap</h4>
+                <form method="post" asp-controller="User" asp-action="Reserve" asp-route-id="@Model.Id">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="startDate">Başlangıç Tarihi:</label>
+                            <input type="date" id="startDate" name="startDate" class="form-control" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="endDate">Bitiş Tarihi:</label>
+                            <input type="date" id="endDate" name="endDate" class="form-control" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Rezervasyon Yap</button>
+                </form>
+            }
+            else
+            {
+                <p class="text-danger mt-4">Bu araç başka bir kullanıcımız tarafından kiralanmıştır. Lütfen başka bir araç seçiniz.</p>
+            }
+        </div>
+        <div class="card-footer text-muted">
+            @if (Model.IsAvailable)
+            {
+                <span class="text-success">Araç Uygun</span>
+            }
+            else
+            {
+                <span class="text-danger">Araç Kiralanmış</span>
+            }
+        </div>
+    </div>
+</div>

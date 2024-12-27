@@ -1,0 +1,30 @@
+﻿@model AracKiralamaPortal.Models.Car
+
+@{
+    ViewData["Title"] = "Yeni Araç Ekle";
+}
+
+<h1>Yeni Araç Ekle</h1>
+
+<form asp-action="AddCar" method="post">
+    <div class="form-group">
+        <label for="Brand">Marka:</label>
+        <input type="text" class="form-control" id="Brand" name="Brand" required />
+    </div>
+    <div class="form-group">
+        <label for="Model">Model:</label>
+        <input type="text" class="form-control" id="Model" name="Model" required />
+    </div>
+    <div class="form-group">
+        <label for="PricePerDay">Günlük Fiyat:</label>
+        <input type="number" class="form-control" id="PricePerDay" name="PricePerDay" required />
+    </div>
+    <div class="form-group">
+        <label for="IsAvailable">Durum:</label>
+        <select class="form-control" id="IsAvailable" name="IsAvailable">
+            <option value="true">Uygun</option>
+            <option value="false">Kiralanmış</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Ekle</button>
+</form>
